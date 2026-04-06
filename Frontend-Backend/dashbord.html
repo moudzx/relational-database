@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Football Club Dashboard</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+        min-height: 100vh;
+        padding: 20px;
+        position: relative;
+    }
+
+    /* Animated background */
+    .bg-animation {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .football-small {
+        position: absolute;
+        opacity: 0.05;
+        animation: floatSlow 25s infinite linear;
+    }
+
+    .football-small::before {
+        content: '⚽';
+        font-size: 30px;
+    }
+
+    .football-small:nth-child(1) { left: 10%; animation-delay: 0s; }
+    .football-small:nth-child(2) { left: 30%; animation-delay: 5s; }
+    .football-small:nth-child(3) { left: 50%; animation-delay: 10s; }
+    .football-small:nth-child(4) { left: 70%; animation-delay: 15s; }
+    .football-small:nth-child(5) { left: 90%; animation-delay: 20s; }
+
+    @keyframes floatSlow {
+        0% { transform: translateY(100vh) rotate(0deg); }
+        100% { transform: translateY(-100px) rotate(360deg); }
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Header */
+    .header {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        padding: 30px 40px;
+        border-radius: 25px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        margin-bottom: 30px;
+        animation: slideDown 0.8s ease-out;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+        0% { left: -100%; }
+        50%, 100% { left: 100%; }
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .logo-dash {
+        font-size: 50px;
+        animation: rotate 4s linear infinite;
+    }
+
+    @keyframes rotate {
+        0%, 100% { transform: rotate(0deg); }
+        50% { transform: rotate(360deg); }
+    }
+
+    .header-info h1 {
+        font-size: 28px;
+        color: #0f2027;
+        margin-bottom: 8px;
+        font-weight: 800;
+        background: linear-gradient(135deg, #0f2027 0%, #2c5364 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .role-badge {
+        display: inline-block;
+        padding: 8px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 25px;
+        font-weight: 700;
+        font-size: 14px;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+
+    .logout-btn {
+        background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 15px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 20px rgba(255, 68, 68, 0.4);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .logout-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(255, 68, 68, 0.6);
+    }
+
+    .logout-btn:active {
+        transform: translateY(-1px);
+    }
+
+    /* Stats Cards */
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+        animation: fadeIn 1s ease-out 0.3s both;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 25px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        transition: all 0.3s ease;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .stat-icon {
+        font-size: 40px;
+        margin-bottom: 10px;
+    }
+
+    .stat-label {
+        color: #666;
+        font-size: 14px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+    }
+
+    .stat-value {
+        color: #0f2027;
+        font-size: 36px;
+        font-weight: 800;
+    }
+
+    /* Data Table */
+    .data-table {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+        animation: fadeIn 1s ease-out 0.5s both;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .table-header {
+        background: linear-gradient(135deg, #2c5364 0%, #0f2027 100%);
+        padding: 25px 30px;
+        color: white;
+    }
+
+    .table-header h2 {
+        font-size: 24px;
+        font-weight: 700;
+        margin: 0;
+        letter-spacing: 1px;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+        max-height: 600px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    th {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 18px 15px;
+        text-align: left;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 13px;
+        letter-spacing: 1px;
+        border-bottom: 3px solid #0f2027;
+    }
+
+    td {
+        padding: 15px;
+        border-bottom: 1px solid #e0e0e0;
+        color: #333;
+        font-size: 14px;
+        transition: background 0.3s;
+    }
+
+    tbody tr {
+        transition: all 0.3s ease;
+    }
+
+    tbody tr:hover {
+        background: linear-gradient(90deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+        transform: scale(1.01);
+    }
+
+    tbody tr:nth-child(even) {
+        background: rgba(0, 0, 0, 0.02);
+    }
+
+    tbody tr:nth-child(even):hover {
+        background: linear-gradient(90deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+    }
+
+    .loading {
+        text-align: center;
+        padding: 60px;
+        color: #666;
+    }
+
+    .spinner {
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #2c5364;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .no-data {
+        text-align: center;
+        padding: 60px;
+        color: #999;
+        font-size: 18px;
+    }
+
+    .no-data-icon {
+        font-size: 60px;
+        margin-bottom: 15px;
+        opacity: 0.5;
+    }
+
+    .error-message {
+        background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        margin: 20px;
+        text-align: center;
+        font-weight: 600;
+        box-shadow: 0 10px 30px rgba(255, 68, 68, 0.4);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .header-content {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .header-left {
+            flex-direction: column;
+        }
+
+        .stats-container {
+            grid-template-columns: 1fr;
+        }
+
+        .table-wrapper {
+            font-size: 12px;
+        }
+
+        th, td {
+            padding: 10px 8px;
+        }
+    }
+
+    /* Scrollbar styling */
+    .table-wrapper::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    .table-wrapper::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 10px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+</style>
+</head>
+<body>
+    <!-- Background Animation -->
+    <div class="bg-animation">
+        <div class="football-small"></div>
+        <div class="football-small"></div>
+        <div class="football-small"></div>
+        <div class="football-small"></div>
+        <div class="football-small"></div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="logo-dash">⚽</div>
+                    <div class="header-info">
+                        <h1>Football Club Dashboard</h1>
+                        <span class="role-badge" id="userRole">Loading...</span>
+                    </div>
+                </div>
+                <button class="logout-btn" onclick="logout()">
+                    🚪 Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-container" id="statsContainer">
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-label">Total Records</div>
+                <div class="stat-value" id="totalRecords">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-label">Last Updated</div>
+                <div class="stat-value" id="lastUpdated" style="font-size: 16px;">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⚡</div>
+                <div class="stat-label">Status</div>
+                <div class="stat-value" id="status" style="font-size: 20px; color: #00C851;">Active</div>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="data-table">
+            <div class="table-header">
+                <h2>📋 Database Records</h2>
+            </div>
+            <div class="table-wrapper">
+                <div class="loading" id="loadingDiv">
+                    <div class="spinner"></div>
+                    <p>Loading data...</p>
+                </div>
+                <table id="dataTable" style="display: none;">
+                    <thead>
+                        <tr id="tableHeaders"></tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+                <div class="no-data" id="noDataDiv" style="display: none;">
+                    <div class="no-data-icon">📭</div>
+                    <p>No data available</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const userRole = localStorage.getItem('userRole');
+        
+        // Check if user is logged in
+        if (!userRole) {
+            window.location.href = 'login.html';
+        }
+
+        // Display user role
+        document.getElementById('userRole').textContent = userRole;
+
+        // Load data on page load
+        loadData();
+
+        async function loadData() {
+            const loadingDiv = document.getElementById('loadingDiv');
+            const dataTable = document.getElementById('dataTable');
+            const noDataDiv = document.getElementById('noDataDiv');
+            
+            try {
+                const res = await fetch(`http://localhost:3002/api/data?role=${userRole}`, { 
+                    credentials: 'include' 
+                });
+                
+                const data = await res.json();
+                
+                // Hide loading
+                loadingDiv.style.display = 'none';
+                
+                if (!data.success) {
+                    showError('Failed to load data: ' + data.error);
+                    return;
+                }
+
+                const rows = data.data;
+                
+                if (!rows || rows.length === 0) {
+                    noDataDiv.style.display = 'block';
+                    updateStats(0);
+                    return;
+                }
+
+                // Show table
+                dataTable.style.display = 'table';
+
+                // Generate table headers
+                const headers = Object.keys(rows[0]);
+                document.getElementById('tableHeaders').innerHTML = 
+                    headers.map(h => `<th>${h.toUpperCase().replace(/_/g, ' ')}</th>`).join('');
+                
+                // Generate table rows
+                document.getElementById('tableBody').innerHTML = rows.map(r => 
+                    `<tr>${headers.map(h => `<td>${r[h] ?? 'N/A'}</td>`).join('')}</tr>`
+                ).join('');
+
+                // Update stats
+                updateStats(rows.length);
+                
+            } catch(err) {
+                loadingDiv.style.display = 'none';
+                showError('Connection error: ' + err.message);
+                console.error('Load data error:', err);
+            }
+        }
+
+        function updateStats(count) {
+            document.getElementById('totalRecords').textContent = count;
+            
+            // Update last updated time
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            document.getElementById('lastUpdated').textContent = timeStr;
+        }
+
+        function showError(message) {
+            const tableWrapper = document.querySelector('.table-wrapper');
+            tableWrapper.innerHTML = `<div class="error-message">❌ ${message}</div>`;
+        }
+
+        async function logout() {
+            try {
+                await fetch('http://localhost:3002/logout', { 
+                    method: 'POST', 
+                    credentials: 'include' 
+                });
+            } catch(err) {
+                console.error('Logout error:', err);
+            }
+            
+            localStorage.removeItem('userRole');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
